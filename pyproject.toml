@@ -1,0 +1,4 @@
+[tool.pyright]
+reportMissingModuleSource = false
+venvPath = "."
+venv=venv
