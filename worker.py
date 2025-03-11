@@ -19,8 +19,13 @@ def get_email_service():
 
 
 def send_recovery_code(data: dict):
+    base_url = "http://localhost:5000"
+    recovery_token = data.get("token")
     service = get_email_service()
-    msg = MIMEText("Please reset your password")
+
+    restore_password_url = f"{base_url}/#/auth/reset_password/{recovery_token}"
+
+    msg = MIMEText(f"Please reset your password. {restore_password_url}")
     msg["Subject"] = "Reset Password"
     msg["From"] = "rococo@rococo.com"
 

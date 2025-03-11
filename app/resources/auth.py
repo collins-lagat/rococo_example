@@ -1,4 +1,5 @@
 import os
+from rococo.auth.tokens import generate_confirmation_token
 from uuid import UUID
 
 from flask import request
@@ -70,12 +71,14 @@ class Register(Resource):
 
         # Send Reset Password Email
         # 1. Create OTP Method
-        otp_method = OtpMethod(person=person.entity_id, secret=None)
+        otp_method = OtpMethod(person=person.entity_id, secret="super-secret")
         otp_method.prepare_for_save(changed_by_id=temp_id)
         otp_method_repo = RepositoryFactory.get_repository(OtpMethodRepository)
         otp_method_repo.save(otp_method)
         # 2. Create Recovery Code
-        recovery_code = RecoveryCode(otp_method=otp_method.entity_id, secret=None)
+        recovery_code = RecoveryCode(
+            otp_method=otp_method.entity_id, secret="super-secret"
+        )
         recovery_code.prepare_for_save(changed_by_id=temp_id)
         recovery_code_repo = RepositoryFactory.get_repository(RecoveryCodeRepository)
         # recovery_code_repo.save(recovery_code, send_message=True)
@@ -92,7 +95,12 @@ class Register(Resource):
         ) as connection:
             connection.send_message(
                 recovery_code_repo.queue_name,
-                recovery_code.as_dict(convert_datetime_to_iso_string=True),
+                {
+                    "base_url": request.base_url,
+                    "token": generate_confirmation_token(
+                        email.email, recovery_code.secret
+                    ),
+                },
             )
 
         return {"message": "User registered!"}
