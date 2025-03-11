@@ -1,5 +1,9 @@
 import os
-from rococo.auth.tokens import generate_confirmation_token
+from rococo.auth.tokens import (
+    generate_access_token,
+    generate_confirmation_token,
+    validate_confirmation_token,
+)
 from uuid import UUID
 
 from flask import request
@@ -20,6 +24,7 @@ from app.repositories.otp_method import OtpMethodRepository
 from app.repositories.person import PersonRepository
 from app.repositories.person_organisation_role import PersonOrganizationRoleRepository
 from app.repositories.recovery_code import RecoveryCodeRepository
+from app.repositories.login_method import LoginMethodRepository
 
 
 class Register(Resource):
@@ -108,9 +113,82 @@ class Register(Resource):
 
 class Login(Resource):
     def post(self):
-        return {"message": "User logged in!"}
+        data = request.get_json()
+        email = data.get("email")
+        password = data.get("password")
+
+        # Check if user exists
+        email_repo = RepositoryFactory.get_repository(EmailRepository)
+        email_obj = email_repo.get_one({"email": email})
+        if not email_obj:
+            return {"message": "User does not exist"}
+
+        # Check if password is correct
+        login_method_repo = RepositoryFactory.get_repository(LoginMethodRepository)
+        login_method = login_method_repo.get_one(
+            {"person": email_obj.person, "email": email_obj.entity_id}
+        )
+
+        if not login_method:
+            return {"message": "Invalid email or password"}
+
+        if login_method.method_type == "password":
+            if login_method.method_data != password:
+                return {"message": "Invalid email or password"}
+            else:
+                auth_token, expiry = generate_access_token(
+                    email_obj.person, "super-secret", 3600
+                )
+                return {
+                    "message": "User logged in!",
+                    "auth_token": auth_token,
+                    "expiry": expiry,
+                }
+        else:
+            return {"message": "Invalid login method"}
 
 
 class ResetPassword(Resource):
     def post(self):
-        return {"message": "Password reset!"}
+        temp_id = UUID(int=1, version=4)
+        data = request.get_json()
+        token = data.get("token")
+        password = data.get("password")
+        confirm_password = data.get("confirm_password")
+
+        # Check if token is valid
+        if not validate_confirmation_token(token, "super-secret", 3600):
+            return {"message": "Invalid token"}
+
+        # Check if passwords match
+        if password != confirm_password:
+            return {"message": "Passwords do not match"}
+
+        # Save Password
+        email = token.split(":")[0]
+        email_repo = RepositoryFactory.get_repository(EmailRepository)
+        email_obj = email_repo.get_one({"email": email})
+        login_method_repo = RepositoryFactory.get_repository(LoginMethodRepository)
+        login_method = LoginMethod(
+            person=email_obj.person,
+            method_type="password",
+            method_data=password,
+            email=email_obj.entity_id,
+            password=password,
+        )
+        login_method.prepare_for_save(changed_by_id=temp_id)
+        login_method_repo.save(login_method)
+
+        # Clear Recovery Codes
+        otp_method_repo = RepositoryFactory.get_repository(OtpMethodRepository)
+        otp_method = otp_method_repo.get_one({"person": email_obj.person})
+        recovery_code_repo = RepositoryFactory.get_repository(RecoveryCodeRepository)
+        recovery_codes = recovery_code_repo.get_many(
+            {"otp_method": otp_method.entity_id}
+        )
+        for recovery_code in recovery_codes:
+            recovery_code_repo.delete(recovery_code)
+
+        return {
+            "message": "Password reset!",
+        }
