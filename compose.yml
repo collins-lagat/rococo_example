@@ -56,6 +56,28 @@ services:
       RABBITMQ_USERNAME: rococo
       RABBITMQ_PASSWORD: 1234
 
+  worker:
+    depends_on:
+      - db
+      - rabbitmq
+      - mailpit
+    build:
+      context: .
+    volumes:
+      - .:/app
+    command: python worker.py
+    environment:
+      DB_HOST: db
+      DB_USER: rococo
+      DB_PASSWORD: 1234
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USERNAME: rococo
+      RABBITMQ_PASSWORD: 1234
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      SMTP_USERNAME: rococo
+      SMTP_PASSWORD: 1234
+
 volumes:
   pgadmin:
   postgres:
