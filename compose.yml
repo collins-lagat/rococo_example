@@ -18,6 +18,15 @@ services:
     ports:
       - ${PGADMIN_PORT:-5050}:80
 
+  mailpit:
+    image: "axllent/mailpit:latest"
+    ports:
+      - "${FORWARD_MAILPIT_PORT:-1025}:1025"
+      - "${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025"
+    command: ["--smtp-auth-allow-insecure"]
+    environment:
+      MP_SMTP_AUTH: "rococo:1234"
+
   rabbitmq:
     image: rabbitmq:4.0.7-management-alpine
     ports:
