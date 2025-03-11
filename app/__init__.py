@@ -1,5 +1,6 @@
+import os
 from dotenv import load_dotenv
-from flask import Blueprint, Flask
+from flask import Blueprint, Flask, send_file, send_from_directory
 from flask_restful import Api, Resource
 
 from app.resources.account import Account
@@ -13,8 +14,13 @@ api = Api(api_bp)
 
 
 @app.route("/")
-def App():
-    return "<p>Vue App!</p>"
+def index():
+    return send_file(os.path.join(app.root_path, "views/dist/index.html"))
+
+
+@app.route("/<path:path>")
+def static(path):
+    return send_from_directory(os.path.join(app.root_path, "views/dist"), path)
 
 
 class Actuator(Resource):
