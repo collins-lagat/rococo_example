@@ -4,12 +4,11 @@ from rococo.data.postgresql import PostgreSQLAdapter
 
 load_dotenv()
 
-query = """
-    SELECT * FROM users;
-    """
-
 
 def run():
+    with open(os.path.join(os.path.dirname(__file__), "schema.sql"), "r") as file:
+        query = file.read()
+
     db_adapter = PostgreSQLAdapter(
         host=os.environ.get("DB_HOST", "localhost"),
         port=os.environ.get("DB_PORT", "5432"),
