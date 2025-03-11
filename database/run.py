@@ -11,7 +11,7 @@ def run():
 
     db_adapter = PostgreSQLAdapter(
         host=os.environ.get("DB_HOST", "localhost"),
-        port=os.environ.get("DB_PORT", "5432"),
+        port=int(os.environ.get("DB_PORT", "5432")),
         database=os.environ.get("DB_NAME", "rococo"),
         user=os.environ.get("DB_USER", "postgres"),
         password=os.environ.get("DB_PASSWORD", "postgres"),
