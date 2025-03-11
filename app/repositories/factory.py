@@ -2,6 +2,7 @@ import os
 from typing import Type
 
 from rococo.data import PostgreSQLAdapter
+from rococo.messaging import RabbitMqConnection
 from rococo.repositories import BaseRepository
 
 
@@ -19,8 +20,17 @@ class RepositoryFactory:
         )
 
     @classmethod
-    def _get_message_adapter(self):
-        return None
+    def _get_message_adapter(cls):
+        # BUG: connection isn't set impliying that __enter__ is not called
+        # Get error: AttributeError: 'NoneType' object has no attribute 'basic_publish'
+        with RabbitMqConnection(
+            host=os.environ.get("RABBITMQ_HOST", "localhost"),
+            port=int(os.environ.get("RABBITMQ_PORT", "5672")),
+            username=os.environ.get("RABBITMQ_USERNAME", "guest"),
+            password=os.environ.get("RABBITMQ_PASSWORD", "guest"),
+            virtual_host="/",
+        ) as connection:
+            return connection
 
     @classmethod
     def get_repository(cls, repo_class: Type[BaseRepository]) -> BaseRepository:

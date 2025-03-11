@@ -1,7 +1,9 @@
+import os
 from uuid import UUID
 
 from flask import request
 from flask_restful import Resource
+from rococo.messaging import RabbitMqConnection
 from rococo.models.email import Email
 from rococo.models.login_method import LoginMethod
 from rococo.models.organization import Organization
@@ -76,7 +78,22 @@ class Register(Resource):
         recovery_code = RecoveryCode(otp_method=otp_method.entity_id, secret=None)
         recovery_code.prepare_for_save(changed_by_id=temp_id)
         recovery_code_repo = RepositoryFactory.get_repository(RecoveryCodeRepository)
-        recovery_code_repo.save(recovery_code, send_message=True)
+        # recovery_code_repo.save(recovery_code, send_message=True)
+        # HACK: send message manually
+        # TODO: wait for upstream fix
+        recovery_code_repo.save(recovery_code)
+        # 3. Send Email
+        with RabbitMqConnection(
+            host=os.environ.get("RABBITMQ_HOST", "localhost"),
+            port=int(os.environ.get("RABBITMQ_PORT", "5672")),
+            username=os.environ.get("RABBITMQ_USERNAME", "guest"),
+            password=os.environ.get("RABBITMQ_PASSWORD", "guest"),
+            virtual_host="/",
+        ) as connection:
+            connection.send_message(
+                recovery_code_repo.queue_name,
+                recovery_code.as_dict(convert_datetime_to_iso_string=True),
+            )
 
         return {"message": "User registered!"}
 
