@@ -1,7 +1,11 @@
-from flask import Flask, Blueprint
-from flask_restful import Resource, Api
+from dotenv import load_dotenv
+from flask import Blueprint, Flask
+from flask_restful import Api, Resource
+
 from app.resources.account import Account
-from app.resources.auth import Register, Login, ResetPassword
+from app.resources.auth import Login, Register, ResetPassword
+
+load_dotenv()
 
 app = Flask(__name__)
 api_bp = Blueprint("api", __name__, url_prefix="/api")
