@@ -7,7 +7,7 @@ const store = useAccountStore()
 const isLoading = ref(true)
 
 const title = computed(() => {
-  if (isLoading) {
+  if (isLoading.value) {
     return "Loading..."
   }
   return `Hi, ${store.user.first_name} ${store.user.last_name}!`
