@@ -19,7 +19,7 @@ def index():
 
 
 @app.route("/<path:path>")
-def static(path):
+def dist(path):
     return send_from_directory(os.path.join(app.root_path, "views/dist"), path)
 
 
