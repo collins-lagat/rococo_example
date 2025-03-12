@@ -1,13 +1,13 @@
 import os
+from uuid import UUID
+
+from flask import request
+from flask_restful import Resource
 from rococo.auth.tokens import (
     generate_access_token,
     generate_confirmation_token,
     validate_confirmation_token,
 )
-from uuid import UUID
-
-from flask import request
-from flask_restful import Resource
 from rococo.messaging import RabbitMqConnection
 from rococo.models.email import Email
 from rococo.models.login_method import LoginMethod
@@ -19,12 +19,12 @@ from rococo.models.recovery_code import RecoveryCode
 
 from app.repositories.email import EmailRepository
 from app.repositories.factory import RepositoryFactory
+from app.repositories.login_method import LoginMethodRepository
 from app.repositories.organization import OrganizationRepository
 from app.repositories.otp_method import OtpMethodRepository
 from app.repositories.person import PersonRepository
 from app.repositories.person_organisation_role import PersonOrganizationRoleRepository
 from app.repositories.recovery_code import RecoveryCodeRepository
-from app.repositories.login_method import LoginMethodRepository
 
 
 class Register(Resource):
