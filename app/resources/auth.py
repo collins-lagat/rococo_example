@@ -37,7 +37,7 @@ class Register(Resource):
         email = email_repo.get_one({"email": data.get("email")})
 
         if email:
-            return {"message": "User already exists"}
+            return {"message": "User already exists"}, 400
 
         # Organization
         organization = Organization(name=f"{data.get('first_name')}'s Organization")
@@ -121,7 +121,7 @@ class Login(Resource):
         email_repo = RepositoryFactory.get_repository(EmailRepository)
         email_obj = email_repo.get_one({"email": email})
         if not email_obj:
-            return {"message": "User does not exist"}
+            return {"message": "User does not exist"}, 400
 
         # Check if password is correct
         login_method_repo = RepositoryFactory.get_repository(LoginMethodRepository)
@@ -130,11 +130,11 @@ class Login(Resource):
         )
 
         if not login_method:
-            return {"message": "Invalid email or password"}
+            return {"message": "Invalid email or password"}, 400
 
         if login_method.method_type == "password":
             if login_method.method_data != password:
-                return {"message": "Invalid email or password"}
+                return {"message": "Invalid email or password"}, 400
             else:
                 auth_token, expiry = generate_access_token(
                     email_obj.person, "super-secret", 3600
@@ -145,7 +145,7 @@ class Login(Resource):
                     "expiry": expiry,
                 }
         else:
-            return {"message": "Invalid login method"}
+            return {"message": "Invalid login method"}, 400
 
 
 class NewPassword(Resource):
@@ -158,11 +158,11 @@ class NewPassword(Resource):
 
         # Check if token is valid
         if not validate_confirmation_token(token, "super-secret", 3600):
-            return {"message": "Invalid token"}
+            return {"message": "Invalid token"}, 400
 
         # Check if passwords match
         if password != confirm_password:
-            return {"message": "Passwords do not match"}
+            return {"message": "Passwords do not match"}, 400
 
         # Save Password
         email = token.split(":")[0]
