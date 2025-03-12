@@ -23,7 +23,7 @@ def send_recovery_code(data: dict):
     recovery_token = data.get("token")
     service = get_email_service()
 
-    restore_password_url = f"{base_url}/#/auth/reset_password/{recovery_token}"
+    restore_password_url = f"{base_url}/#/new-password/{recovery_token}"
 
     msg = MIMEText(f"Please reset your password. {restore_password_url}")
     msg["Subject"] = "Reset Password"

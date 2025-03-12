@@ -4,7 +4,7 @@ from flask import Blueprint, Flask, send_file, send_from_directory
 from flask_restful import Api, Resource
 
 from app.resources.account import Account
-from app.resources.auth import Login, Register, ResetPassword
+from app.resources.auth import Login, Register, NewPassword
 
 load_dotenv()
 
@@ -32,6 +32,6 @@ api.add_resource(Actuator, "/version")
 api.add_resource(Account, "/account")
 api.add_resource(Register, "/register")
 api.add_resource(Login, "/login")
-api.add_resource(ResetPassword, "/reset-password")
+api.add_resource(NewPassword, "/new-password")
 
 app.register_blueprint(api_bp)

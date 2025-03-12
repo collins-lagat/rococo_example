@@ -148,7 +148,7 @@ class Login(Resource):
             return {"message": "Invalid login method"}
 
 
-class ResetPassword(Resource):
+class NewPassword(Resource):
     def post(self):
         temp_id = UUID(int=1, version=4)
         data = request.get_json()
