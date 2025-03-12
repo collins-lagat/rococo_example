@@ -1,6 +1,8 @@
 import os
+
 from dotenv import load_dotenv
 from flask import Blueprint, Flask, send_file, send_from_directory
+from flask_cors import CORS
 from flask_restful import Api, Resource
 
 from app.resources.account import Account
@@ -9,6 +11,7 @@ from app.resources.auth import Login, Register, NewPassword
 load_dotenv()
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 api = Api(api_bp)
 
