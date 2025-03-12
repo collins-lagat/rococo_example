@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import api from "./api"
+import api from "./api";
 
 export const useAuthStore = defineStore('auth', {
   state: () => {
@@ -77,9 +77,17 @@ export const useAccountStore = defineStore('account', {
   },
   actions: {
     async get() {
-      const { token } = useAuthStore()
-      const response = await api.account.get(token)
+      const authStore = useAuthStore()
+      const response = await api.account.get(authStore.token)
       const data = await response.json()
+
+      if (!response.ok && response.status === 401) {
+        localStorage.removeItem('token')
+        localStorage.removeItem('expiry')
+        authStore.token = null
+        authStore.expiry = null
+        throw new Error("Unauthorized")
+      }
 
       if (!response.ok && data?.message) {
         throw new Error(data.message)

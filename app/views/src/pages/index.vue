@@ -1,8 +1,10 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useAccountStore } from "../store"
+import { useRouter } from 'vue-router';
 
 const store = useAccountStore()
+const router = useRouter()
 
 const isLoading = ref(true)
 
@@ -13,8 +15,12 @@ const title = computed(() => {
   return `Hi, ${store.user.first_name} ${store.user.last_name}!`
 })
 
-store.get().then((data) => {
+store.get().then(() => {
   isLoading.value = false
+}).catch(e => {
+  if (e.message === "Unauthorized") {
+    router.push("/sign-in")
+  }
 })
 
 </script>
