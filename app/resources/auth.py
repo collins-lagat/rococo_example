@@ -140,7 +140,7 @@ class Login(Resource):
                     email_obj.person, "super-secret", 3600
                 )
                 return {
-                    "message": "User logged in!",
+                    "message": "logged in!",
                     "auth_token": auth_token,
                     "expiry": expiry,
                 }
@@ -190,5 +190,5 @@ class NewPassword(Resource):
             recovery_code_repo.delete(recovery_code)
 
         return {
-            "message": "Password reset!",
+            "message": "new password set!",
         }
