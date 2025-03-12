@@ -17,18 +17,51 @@ export const useAuthStore = defineStore('auth', {
     },
   },
   actions: {
-    signUp(firstName, lastName, email) {
-      return api.auth.signUp(firstName, lastName, email)
+    async signUp(firstName, lastName, email) {
+      const response = await api.auth.signUp(firstName, lastName, email)
+      const data = await response.json()
+
+      if (!response.ok && data?.message) {
+        throw new Error(data.message)
+      }
+
+      if (!response.ok) {
+        throw new Error("Unknown error")
+      }
+
+      return data
     },
     async login(email, password) {
       const response = await api.auth.login(email, password)
-      if (response?.token) {
-        this.token = response.token
+      const data = await response.json()
+
+      if (!response.ok && data?.message) {
+        throw new Error(data.message)
       }
-      return response
+
+      if (!response.ok || !data.token) {
+        throw new Error("Unknown error")
+      }
+
+      if (data.token) {
+        this.token = data.token
+      }
+
+      return data
     },
-    newPassword(verificationCode, password, confirmPassword) {
-      return api.auth.newPassword(verificationCode, password, confirmPassword)
+    async newPassword(verificationCode, password, confirmPassword) {
+      const response = await api.auth.newPassword(verificationCode, password, confirmPassword)
+      const data = await response.json()
+
+      if (!response.ok && data?.message) {
+        throw new Error(data.message)
+      }
+
+      if (!response.ok) {
+        throw new Error("Unknown error")
+      }
+
+      return data
     },
   },
 })
@@ -43,10 +76,20 @@ export const useAccountStore = defineStore('account', {
     async get() {
       const { token } = useAuthStore()
       const response = await api.account.get(token)
-      if (response?.user) {
-        this.user = response.user
+      const data = await response.json()
+
+      if (!response.ok && data?.message) {
+        throw new Error(data.message)
       }
-      return response
+
+      if (!response.ok) {
+        throw new Error("Unknown error")
+      }
+
+      if (data?.user) {
+        this.user = data.user
+      }
+      return data
     },
   },
 })
