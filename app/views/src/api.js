@@ -4,7 +4,7 @@ export default {
   auth: {
     async signUp(firstName, lastName, email) {
       try {
-        const respone = await fetch(`${API_URL}/register`, {
+        const response = await fetch(`${API_URL}/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -15,14 +15,14 @@ export default {
             email,
           }),
         })
-        return await respone.json()
+        return await response.json()
       } catch (error) {
         console.error(error)
       }
     },
     async login(email, password) {
       try {
-        const respone = await fetch(`${API_URL}/login`, {
+        const response = await fetch(`${API_URL}/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -32,14 +32,14 @@ export default {
             password,
           }),
         })
-        return await respone.json()
+        return await response.json()
       } catch (error) {
         console.error(error)
       }
     },
     async newPassword(verificationCode, password, confirmPassword) {
       try {
-        const respone = await fetch(`${API_URL}/new-password`, {
+        const response = await fetch(`${API_URL}/new-password`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ export default {
             confirmPassword,
           }),
         })
-        return await respone.json()
+        return await response.json()
       } catch (error) {
         console.error(error)
       }
@@ -59,14 +59,14 @@ export default {
   account: {
     async get(token) {
       try {
-        const respone = await fetch(`${API_URL}/account`, {
+        const response = await fetch(`${API_URL}/account`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Token ${token}`,
           },
         })
-        return await respone.json()
+        return await response.json()
       } catch (error) {
         console.error(error)
       }
