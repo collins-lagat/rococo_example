@@ -1,10 +1,11 @@
 <script setup>
 import { reactive } from 'vue';
-import { useRoute } from "vue-router"
-import { useAuthStore } from "../store"
+import { useRoute, useRouter } from "vue-router";
+import { useAuthStore } from "../store";
 
 const store = useAuthStore()
 const route = useRoute()
+const router = useRouter()
 
 const form = reactive({
   verificationCode: route.params.token,
@@ -14,7 +15,11 @@ const form = reactive({
 })
 
 const onSubmit = () => {
-  store.newPassword(form.verificationCode, form.password, form.confirmPassword).catch((e) => {
+  store.newPassword(form.verificationCode, form.password, form.confirmPassword).then((data) => {
+    if (data.message === "new password set!") {
+      router.push("/sign-in")
+    }
+  }).catch((e) => {
     form.isError = true
   })
 }

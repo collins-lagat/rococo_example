@@ -75,7 +75,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.auth && !authStore.isAuthenticated) {
     next("/sign-in")
   } if (!to.meta.auth && authStore.isAuthenticated) {
-    next("/index")
+    next("/")
   }
   next()
 })

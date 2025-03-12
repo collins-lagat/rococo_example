@@ -1,8 +1,10 @@
 <script setup>
 import { reactive } from 'vue';
+import { useRouter } from "vue-router"
 import { useAuthStore } from "../store"
 
 const store = useAuthStore()
+const router = useRouter()
 
 const form = reactive({
   email: "",
@@ -11,7 +13,11 @@ const form = reactive({
 })
 
 const onSubmit = () => {
-  store.login(form.email, form.password).catch((e) => {
+  store.login(form.email, form.password).then((data) => {
+    if (data.message === "logged in!") {
+      router.push("/")
+    }
+  }).catch((e) => {
     form.isError = true
   })
 }

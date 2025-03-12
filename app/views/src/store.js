@@ -39,12 +39,15 @@ export const useAuthStore = defineStore('auth', {
         throw new Error(data.message)
       }
 
-      if (!response.ok || !data.token) {
+      if (!response.ok || !data.auth_token) {
         throw new Error("Unknown error")
       }
 
-      if (data.token) {
-        this.token = data.token
+      if (data.auth_token) {
+        localStorage.setItem('token', data.auth_token)
+        localStorage.setItem('expiry', data.expiry)
+        this.token = data.auth_token
+        this.expiry = data.expiry
       }
 
       return data

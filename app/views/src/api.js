@@ -9,8 +9,8 @@ export default {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          firstName,
-          lastName,
+          first_name: firstName,
+          last_name: lastName,
           email,
         }),
       })
@@ -36,9 +36,9 @@ export default {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          verificationCode,
+          token: verificationCode,
           password,
-          confirmPassword,
+          confirm_password: confirmPassword,
         }),
       })
       return response
