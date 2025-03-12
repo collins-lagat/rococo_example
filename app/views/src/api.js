@@ -1,10 +1,10 @@
-const API_URL = 'http://localhost:5000'
+const API_URL = 'http://localhost:5000/api'
 
 export default {
   auth: {
     async signUp(firstName, lastName, email) {
       try {
-        const respone = await fetch(`${API_URL}/auth/signup`, {
+        const respone = await fetch(`${API_URL}/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -22,7 +22,7 @@ export default {
     },
     async login(email, password) {
       try {
-        const respone = await fetch(`${API_URL}/auth/login`, {
+        const respone = await fetch(`${API_URL}/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -39,7 +39,7 @@ export default {
     },
     async newPassword(verificationCode, password, confirmPassword) {
       try {
-        const respone = await fetch(`${API_URL}/auth/new-password`, {
+        const respone = await fetch(`${API_URL}/new-password`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
