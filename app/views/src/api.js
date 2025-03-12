@@ -50,7 +50,7 @@ export default {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Token ${token}`,
+          'Authorization': token,
         },
       })
       return response
