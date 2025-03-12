@@ -89,8 +89,8 @@ export const useAccountStore = defineStore('account', {
         throw new Error("Unknown error")
       }
 
-      if (data?.user) {
-        this.user = data.user
+      if (data?.data) {
+        this.user = data.data
       }
       return data
     },
