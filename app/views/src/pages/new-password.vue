@@ -1,18 +1,30 @@
 <script setup>
 import { reactive } from 'vue';
+import { useRoute } from "vue-router"
+import { useAuthStore } from "../store"
+
+const store = useAuthStore()
+const route = useRoute()
 
 const form = reactive({
-  verificationCode: "",
+  verificationCode: route.params.token,
   password: "",
-  confirmPassword: ""
+  confirmPassword: "",
+  isError: false,
 })
+
+const onSubmit = () => {
+  store.newPassword(form.verificationCode, form.password, form.confirmPassword).catch((e) => {
+    form.isError = true
+  })
+}
 
 </script>
 <template>
   <q-page padding>
     <Container>
       <div>
-        <form @submit="">
+        <form @submit="onSubmit">
           <q-input v-model="form.password" label="Password" />
           <q-input v-model="form.confirmPassword" label="Confirm Password" />
 

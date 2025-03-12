@@ -38,7 +38,7 @@ const routes = [
         },
       },
       {
-        path: 'new-password',
+        path: 'new-password/:token',
         component: NewPassword,
         meta: {
           auth: false,

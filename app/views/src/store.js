@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import api from "./api"
 
 export const useAuthStore = defineStore('auth', {
   state: () => {
@@ -11,16 +12,41 @@ export const useAuthStore = defineStore('auth', {
     isAuthenticated: (state) => {
       return !!state.token
     },
+    user: (state) => {
+      return state.user
+    },
   },
   actions: {
     signUp(firstName, lastName, email) {
-      // TODO: Implement sign up logic
+      return api.auth.signUp(firstName, lastName, email)
     },
-    login(email, password) {
-      // TODO: Implement login logic
+    async login(email, password) {
+      const response = await api.auth.login(email, password)
+      if (response?.token) {
+        this.token = response.token
+      }
+      return response
     },
     newPassword(verificationCode, password, confirmPassword) {
-      // TODO: Implement new password logic
+      return api.auth.newPassword(verificationCode, password, confirmPassword)
+    },
+  },
+})
+
+export const useAccountStore = defineStore('account', {
+  state: () => {
+    return {
+      user: null,
+    }
+  },
+  actions: {
+    async get() {
+      const { token } = useAuthStore()
+      const response = await api.account.get(token)
+      if (response?.user) {
+        this.user = response.user
+      }
+      return response
     },
   },
 })
